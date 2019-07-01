@@ -1,0 +1,18 @@
+.search-box{
+    padding: .5em;
+    display: flex;
+    align-items: center;
+}
+
+.search-box .email-search {
+    margin: auto;
+}
+.search-box .email-search button{
+    margin: 0 .6em;
+    border-radius: 5px;
+}
+
+.search-box .email-search input {
+    border-radius: 5px;
+    padding: .2em;
+}

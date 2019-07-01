@@ -1,0 +1,33 @@
+.chat-list {
+    border-top: 1px solid black;
+    padding-top: 2em;
+    background-color: #614ad3;
+    height: 95vh;
+  }
+  
+  .contact {
+    border: 1px solid black;
+    border-radius: 5px;
+    margin: .2em .5em;
+    display: flex;
+    flex-direction: row;
+    background-color: #f2f6f5;
+    box-shadow: 3px 3px 3px #313131;
+  }
+  .contact .avatar-holder {
+    padding: .5em;
+    width: 30%;
+  }
+
+  .contact .last-dialog {
+    color: gray;
+  }
+  
+  .contact .contact-detail {
+    flex-grow: 1;
+  }
+  
+  .contact-avatar {
+    width: 50%;
+    border-radius: 50%;
+  }
