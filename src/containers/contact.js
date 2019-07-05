@@ -1,6 +1,11 @@
 import React from 'react';
 
 class Contact extends React.Component {
+    handleClick = () => {
+
+        this.props.handleUpdateCon(this.props.conversation._id);
+    }
+
     render() {
         const { receiver, lastDialog } = this.props;
         let content;
@@ -15,7 +20,7 @@ class Contact extends React.Component {
         } else {
             content = `You: ${shortenedContent}`;
         }
-        return <div onClick={() => {this.props.handleUpdateCon(this.props.conversation._id)}} className="contact">
+        return <div onClick={this.handleClick} className={"contact " + (this.props.isSelected ? 'selected' : '')}>
             <div className="avatar-holder">
                 <img src={`http://localhost:3001/users/${this.props.receiver._id}/avatar`} alt="avatar" className="contact-avatar" />
             </div>

@@ -8,24 +8,32 @@ import { bindActionCreators } from 'redux';
 
 class ChatList extends Component {
     renderContact = () => {
-        return this.props.receivers.map(meta => {
+
+        // return all contacts with information of receiver and the last dialog to
+        // render in chat list
+        return this.props.receivers.map(receiver => {
+
+            // pair the right conversation for the right person
             const conversation = this.props.conversations.find(con => {
-                if (con._id === meta.conversation ) {
+                if (con._id === receiver.conversation ) {
                     return true;
                 }
                 return false;
             })
 
             const { dialogs } = conversation;
+            const isSelected = conversation._id === this.props.currentConID;
             return <Contact handleUpdateCon={this.updateCurrentConversation}  
-                            key={meta._id} receiver={meta.receiver}  
+                            key={receiver._id} receiver={receiver.receiver}  
                             lastDialog={dialogs[dialogs.length - 1] } 
-                            conversation={conversation}/>
+                            conversation={conversation}
+                            isSelected={isSelected}
+                            />
         })
     }
 
+    // currentConversation is updated using ID
     updateCurrentConversation = (conversation) => {
-        console.log('Conversation click');
         this.props.updateCurrentCon(conversation);
     }
 

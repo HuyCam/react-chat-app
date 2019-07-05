@@ -4,7 +4,12 @@
     background-color: #614ad3;
     height: 95vh;
   }
-  
+
+  .chat-list .selected {
+    background-color: blue;
+  }
+
+
   .contact {
     border: 1px solid black;
     border-radius: 5px;
@@ -14,6 +19,7 @@
     background-color: #f2f6f5;
     box-shadow: 3px 3px 3px #313131;
   }
+
   .contact .avatar-holder {
     padding: .5em;
     width: 30%;
