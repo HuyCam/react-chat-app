@@ -18,14 +18,11 @@ class SearchBar extends React.Component {
         e.preventDefault();
         
         axios.get(`http://localhost:3001/search?email=${e.target.email.value}`).then(res => {
-            console.log(res.data);
             this.setState({ user: res.data.user, displayResult: true })
         });
-        e.target.email.value = '';
     }
 
     handleBlur = (e) => {
-        console.log('blur');
         const state = this.state;
 
         // call setTimeout because onBlur always happen before other events,
@@ -57,7 +54,10 @@ class SearchBar extends React.Component {
         const isMe = this.isMe(this.state.user._id);
 
         if (conversation && !isMe) {
+            console.log('is not me and already exist user');
             this.props.updateCurrentCon(conversation.conversation);
+        } else if (isMe) {
+            // do nothing
         } else {
             this.props.updateTempReceiver(this.state.user);
             this.props.updateCurrentCon('TEMP');

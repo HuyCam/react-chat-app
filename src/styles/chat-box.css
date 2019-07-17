@@ -1,0 +1,28 @@
+.navigation {
+    border: 1px solid purple;
+    text-align: center;
+    background-color: #614ad3;
+    z-index: 100;
+    display: flex;
+    justify-content: flex-end;
+    width: 100%;
+}
+
+.navigation.menu-list {
+    border: 1px solid gray;
+}
+
+.navigation a {
+    color: white;
+    display: inline-block;
+    padding: 5px;
+}
+
+.navigation a:hover {
+    background-color: white;
+    color: black;
+    transition: ease;
+    text-decoration: none;
+    cursor: pointer;
+}
+

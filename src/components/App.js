@@ -17,8 +17,6 @@ class App extends React.Component {
   render() {
     return (
       <div className="app">
-      
-
       <Router>
             <Route path="/" exact component={Login} />
             <Route path="/chatbox" component={ChatBox} />

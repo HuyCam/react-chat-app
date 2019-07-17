@@ -6,6 +6,8 @@ import ChatWindow from './chat-window';
 import axios from 'axios';
 import socketio from 'socket.io-client';
 
+// style
+import '../styles/chat-box.css';
 // import actions
 import { fetchConversations, addNewConMeta, updateCurrentCon, addNewCon } from '../actions/actions';
 import { bindActionCreators } from 'redux';
@@ -179,6 +181,12 @@ class ChatBox extends React.Component{
         }
         return(
             <div className="container-fluid main-chat">
+                <div className="navigation">
+                    <div className="menu-list">
+                        <a href="#">Sign out</a>
+                        <a href="#">Personal Info</a>
+                    </div>
+                </div>
                 <div className="row">
                     <div className="col-md-3 chat-info">
                         <SearchBar />
