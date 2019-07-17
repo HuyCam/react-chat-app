@@ -32,24 +32,47 @@ class ChatList extends Component {
         })
     }
 
+    componentDidUpdate() {
+        console.log('updated');
+    }
+
     // currentConversation is updated using ID
     updateCurrentConversation = (conversation) => {
         this.props.updateCurrentCon(conversation);
     }
 
     render() {
-        if (!this.props.receivers.length && !this.props.conversations.length) {
+        //!this.props.receivers.length && !this.props.conversations.length
+        // console.log('chat list meta', this.props.meta);
+        // if (!this.props.receivers) {
+            // return <div className="chat-list">
+            //             Loading...
+            //         </div>
+        // } else if (!this.props.receivers.length) {
+        //     return <div className="chat-list">
+        //                 There is no conversation yet, let start some.
+        //             </div>
+        // }
+        if (this.props.receivers.length && this.props.conversations.length) {
+            return (
+                <div className="chat-list">
+                    <div >
+                        {this.renderContact()}
+                    </div>
+                </div>
+            )
+        } else {
             return <div className="chat-list">
                         Loading...
                     </div>
         }
-        return (
-            <div className="chat-list">
-                <div >
-                    {this.renderContact()}
-                </div>
-            </div>
-        )
+       
+    }
+}
+
+const mapStateToProps = (state) => {
+    return {
+        meta: state.conversationsMeta
     }
 }
 
@@ -59,4 +82,4 @@ const mapDispatchToProps = (dispatch) => {
     }
 }
 
-export default connect(null, mapDispatchToProps)(ChatList);
+export default connect(mapStateToProps, mapDispatchToProps)(ChatList);

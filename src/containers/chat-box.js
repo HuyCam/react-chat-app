@@ -26,7 +26,8 @@ class ChatBox extends React.Component{
         });
 
         this.socket.on('initMsg', (body) => {
-            console.log('init msg)');
+            // fetch new conversation that a new user that is not in the chat list pm you
+            this.fetchNewConversation(body.conversationID, false);
         })
     }
     componentWillMount() {
@@ -66,9 +67,8 @@ class ChatBox extends React.Component{
         this.props.fetchConversations(newCons);
     }
 
-    // fetch conversations from server
+    // fetch all conversations from server
     fetchConversation = () => {
-        console.log('run');
         axios.get(`${this.state.endpoint}/conversations`, {
             headers: {
                 'Authorization': 'Bearer ' + this.props.usermeta.token
@@ -89,9 +89,11 @@ class ChatBox extends React.Component{
         return currentCon;
     }
 
-    // fetch new conversationMeta and new conversation when new user init msg with you or vice versa
-    fetchNewConversation = (conversationID) => {
-        console.log(conversationID);
+    /* fetch new conversationMeta and new conversation when new user init msg with you or vice versa
+    navigateCurrentCon is optional argument. Its purpose is for the receiver when their is a new
+    user pm him, his chat box won't automatically point to that conversation.
+    */
+    fetchNewConversation = (conversationID, navigateCurrentCon = true) => {
         axios.get(`${this.state.endpoint}/receiver-and-conversation/${conversationID}`, { 
             headers: {
                 'Authorization': 'Bearer ' + this.props.usermeta.token
@@ -100,7 +102,15 @@ class ChatBox extends React.Component{
             const { conversationMeta, conversations } = res.data;
             this.props.addNewConMeta(conversationMeta);
             this.props.addNewCon(conversations);
-            this.props.updateCurrentCon(conversationID);
+
+            if (navigateCurrentCon) {
+                this.props.updateCurrentCon(conversationID);
+            } else {
+                // this is to get arround the bug of chat List that it won't rerender itself
+                // shallow comparision
+                // this.props.updateCurrentCon(null);
+            }
+
         }).catch(e => console.log(e));
     }
 
@@ -149,7 +159,7 @@ class ChatBox extends React.Component{
             content
         },{
             headers: {
-                Authorization: 'Bearer ' + this.props.usermeta.token
+                Authorization: this.props.usermeta.token
             }
         })
     }
@@ -172,7 +182,8 @@ class ChatBox extends React.Component{
                 <div className="row">
                     <div className="col-md-3 chat-info">
                         <SearchBar />
-                        <ChatList receivers={receivers} 
+                        <ChatList 
+                        receivers={receivers} 
                         conversations={conversations}
                         currentConID={this.props.currentConID}
                         />
