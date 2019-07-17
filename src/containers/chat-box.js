@@ -7,7 +7,7 @@ import axios from 'axios';
 import socketio from 'socket.io-client';
 
 // import actions
-import { fetchConversations } from '../actions/actions';
+import { fetchConversations, addNewConMeta, updateCurrentCon, addNewCon } from '../actions/actions';
 import { bindActionCreators } from 'redux';
 
 
@@ -21,9 +21,12 @@ class ChatBox extends React.Component{
         this.socket = socketio(this.state.endpoint);
 
         this.socket.on('message', (body) => {
-            console.log(body);
             const {conversationID, senderID, content} = body;
             this.updateConversation(conversationID, senderID, content);
+        });
+
+        this.socket.on('initMsg', (body) => {
+            console.log('init msg)');
         })
     }
     componentWillMount() {
@@ -65,6 +68,7 @@ class ChatBox extends React.Component{
 
     // fetch conversations from server
     fetchConversation = () => {
+        console.log('run');
         axios.get(`${this.state.endpoint}/conversations`, {
             headers: {
                 'Authorization': 'Bearer ' + this.props.usermeta.token
@@ -75,7 +79,7 @@ class ChatBox extends React.Component{
     }
 
     getCurrentConversation = () => {
-        const currentCon = this.props.conversations.find(con => {
+        let currentCon = this.props.conversations.find(con => {
             if (con._id === this.props.currentConID) {
                 return true;
             }
@@ -84,9 +88,24 @@ class ChatBox extends React.Component{
 
         return currentCon;
     }
+
+    // fetch new conversationMeta and new conversation when new user init msg with you or vice versa
+    fetchNewConversation = (conversationID) => {
+        console.log(conversationID);
+        axios.get(`${this.state.endpoint}/receiver-and-conversation/${conversationID}`, { 
+            headers: {
+                'Authorization': 'Bearer ' + this.props.usermeta.token
+            }
+        }).then(res => {
+            const { conversationMeta, conversations } = res.data;
+            this.props.addNewConMeta(conversationMeta);
+            this.props.addNewCon(conversations);
+            this.props.updateCurrentCon(conversationID);
+        }).catch(e => console.log(e));
+    }
+
     // send msg to other user
     sendMsg = (senderID, receiverID, conversationID, content) => {
-        const fetchConversations = this.props.fetchConversations;
         // send message to server and get acknowledgement
         this.socket.emit('message', {receiverID, senderID, conversationID, content}, (error, success) => {
             if (error) {
@@ -100,12 +119,37 @@ class ChatBox extends React.Component{
         });
     }
 
+    // send the first message to the receiver
+    initMsg = async (senderID, receiverID, content) => {
+        // post a init conversation
+        axios.post(`${this.state.endpoint}/new/conversations/${receiverID}`, {
+            content,
+        } ,{
+            headers: {
+                'Authorization': 'Bearer ' + this.props.usermeta.token
+            }
+        }).then(res => {
+            let conversationID = res.data._id;
+
+            this.socket.emit('message', { receiverID, senderID, conversationID, content, init: true },  (error, success) => {
+                if (error) {
+                    console.log(error);
+                } else {
+                    console.log(success);
+                    
+                    // fetch new conversation and conversationMeta
+                    this.fetchNewConversation(conversationID);
+                }
+            });
+        })
+    }
+
     postDialog = (content, conversationID) => {
         axios.patch(`${this.state.endpoint}/send-message/conversations/${conversationID}`, {
             content
         },{
             headers: {
-                Authorization: this.props.usermeta.token
+                Authorization: 'Bearer ' + this.props.usermeta.token
             }
         })
     }
@@ -134,7 +178,7 @@ class ChatBox extends React.Component{
                         />
                     </div>
                     <div className="col-md-9 conversation-window">
-                        <ChatWindow  sendMsg={this.sendMsg} user={{ userID, userName }} currentCon={currentCon} />
+                        <ChatWindow initMsg={this.initMsg} receivers={receivers} sendMsg={this.sendMsg} user={{ userID, userName }} currentCon={currentCon} />
                     </div>
                 </div>
             </div>
@@ -143,22 +187,21 @@ class ChatBox extends React.Component{
 }
 
 const mapStateToProps = (state) => {
-    if (!state.usermeta) {
-        return {
-            usermeta: null
-        }
-    }
     return {
         usermeta: state.usermeta,
         conversations: state.conversations,
         conversationsMeta: state.conversationsMeta,
-        currentConID: state.currentConID
+        currentConID: state.currentConID,
+        tempReceiver: state.tempReceiver
     }
 }
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        fetchConversations: bindActionCreators(fetchConversations, dispatch)
+        fetchConversations: bindActionCreators(fetchConversations, dispatch),
+        addNewConMeta: bindActionCreators(addNewConMeta, dispatch),
+        updateCurrentCon: bindActionCreators(updateCurrentCon, dispatch),
+        addNewCon: bindActionCreators(addNewCon, dispatch)
     }
 
 }

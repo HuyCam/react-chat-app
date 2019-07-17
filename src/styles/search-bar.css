@@ -8,6 +8,7 @@
     margin: auto;
 }
 .search-box .email-search button{
+    width: 15%;
     margin: 0 .6em;
     border-radius: 5px;
 }
@@ -15,4 +16,34 @@
 .search-box .email-search input {
     border-radius: 5px;
     padding: .2em;
+    width: 70%;
+}
+
+.search-box .search-result {
+    position: absolute;
+    border: 1px solid gray;
+    box-shadow: 5px 5px 5px black;
+    border-radius: 5px;
+    background: white;
+    width: 55%;
+}
+
+.search-box .search-result:hover {
+    background-color: blue;
+}
+
+.search-box img {
+    width: 80%;
+}
+
+.search-box .search-result img {
+    width: 10%;
+}
+/* display and not display */
+.search-box .display {
+    display: block;
+}
+
+.search-box .hide {
+    display: none;
 }

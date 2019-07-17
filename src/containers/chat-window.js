@@ -50,6 +50,7 @@ class ChatWindow extends React.Component {
         }
         // send message to other user
         this.props.sendMsg(userID, receiverID, currentCon._id, e.target.parentElement.content.value);
+        
 
         // reset input value
         e.target.parentElement.content.value = '';
@@ -63,12 +64,64 @@ class ChatWindow extends React.Component {
     this.el.scrollIntoView({ behavior: 'smooth' });
     }
 
+    getReceiverInfo = () => {
+        // if user has clicked on a contact to show conversation
+        if (this.props.currentCon) {
+            const receiver = this.props.receivers.find(val => {
+                return val.conversation === this.props.currentCon._id;
+            });
+
+            return receiver.receiver;
+        } else if (this.props.currentConID === 'TEMP') {
+            return this.props.tempReceiver;
+        }
+
+        return null;
+    }
+
+    handleSubmitTemp = (e) => {
+        e.preventDefault();
+        const { user: { userID }} = this.props;
+
+        const { _id: receiverID }= this.getReceiverInfo();
+
+        // if user has not open any conversation
+        if (!receiverID) {
+            return;
+        }
+
+        // if input content has nothing or empty string
+        if (!e.target.parentElement.content.value.trim()) {
+            return;
+        }
+        // send message to other user
+        this.props.initMsg(userID, receiverID, e.target.parentElement.content.value)
+        
+        // reset input value
+        e.target.parentElement.content.value = '';
+    }
+
     render() {
+        const receiver = this.getReceiverInfo();
         // check if user will be able to send msg if a conversation has been selected
         const canSendMsg = this.props.currentCon ? false : true;
+
+        if (this.props.currentConID === 'TEMP') {
+            return <div className="chat-window">
+                    <div className="conversation">
+                        <div><h2>Talking to { receiver ? receiver.name : '...' }</h2></div>
+                        <div ref={el => { this.el = el; }} />
+                    </div>
+                    <form onSubmit={this.handleSubmitTemp} className="text-message">
+                        <input type="text" name="content"/>
+                        <button onClick={this.handleSubmitTemp}>Send</button>
+                    </form>
+                </div>
+        }
         return (
             <div className="chat-window">
                 <div className="conversation">
+                    <div><h2>Talking to { receiver ? receiver.name : '...' }</h2></div>
                     {this.renderCon()}
                     <div ref={el => { this.el = el; }} />
                 </div>
@@ -83,7 +136,8 @@ class ChatWindow extends React.Component {
 
 const mapStateToProps = (state) => {
     return {
-        conversation: state.currentCon
+        currentConID: state.currentConID,
+        tempReceiver: state.tempReceiver
     }
 }
 
