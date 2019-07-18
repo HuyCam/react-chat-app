@@ -184,7 +184,7 @@ class ChatBox extends React.Component{
                 <div className="navigation">
                     <div className="menu-list">
                         <a href="#">Sign out</a>
-                        <a href="#">Personal Info</a>
+                        <a href="#">Personal Info[in development]</a>
                     </div>
                 </div>
                 <div className="row">
