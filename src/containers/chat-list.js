@@ -42,17 +42,6 @@ class ChatList extends Component {
     }
 
     render() {
-        //!this.props.receivers.length && !this.props.conversations.length
-        // console.log('chat list meta', this.props.meta);
-        // if (!this.props.receivers) {
-            // return <div className="chat-list">
-            //             Loading...
-            //         </div>
-        // } else if (!this.props.receivers.length) {
-        //     return <div className="chat-list">
-        //                 There is no conversation yet, let start some.
-        //             </div>
-        // }
         if (this.props.receivers.length && this.props.conversations.length) {
             return (
                 <div className="chat-list">
@@ -61,10 +50,14 @@ class ChatList extends Component {
                     </div>
                 </div>
             )
+        // } else if (this.props.receivers.length === 0 || this.props.conversations.length === 0) {
+        //     return <div className="chat-list">
+        //                 No conversation yet
+        //             </div>
         } else {
             return <div className="chat-list">
-                        Loading...
-                    </div>
+            Loading...
+        </div>
         }
        
     }
