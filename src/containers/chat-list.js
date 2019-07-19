@@ -55,16 +55,6 @@ class ChatList extends Component {
                     </div>
                 </div>
             )
-<<<<<<< HEAD
-        // } else if (this.props.receivers.length === 0 || this.props.conversations.length === 0) {
-        //     return <div className="chat-list">
-        //                 No conversation yet
-        //             </div>
-        } else {
-            return <div className="chat-list">
-            Loading...
-        </div>
-=======
         } else if (!this.props.receivers || !this.props.conversations) {
             return <div className="chat-list">
                         Loading...
@@ -73,7 +63,6 @@ class ChatList extends Component {
             return <div className="chat-list">
                         You current not on the conversation with anybody. Let get some.
                     </div>
->>>>>>> chat-testing
         }
        
     }
