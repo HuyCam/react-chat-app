@@ -6,7 +6,10 @@ const Reducer = combineReducers({
     conversations,
     conversationsMeta,
     currentConID: updateCurrentCon,
-    tempReceiver: tempReceiver
+    tempReceiver: tempReceiver,
+    endpoint: function() {
+        return 'https://hc-chat-app.herokuapp.com'
+    }
 })
 
 export default Reducer;

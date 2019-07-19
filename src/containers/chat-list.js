@@ -21,6 +21,11 @@ class ChatList extends Component {
                 return false;
             })
 
+            // if there is no conversation found
+            if (!conversation) {
+                return false;
+            }
+
             const { dialogs } = conversation;
             const isSelected = conversation._id === this.props.currentConID;
             return <Contact handleUpdateCon={this.updateCurrentConversation}  
@@ -50,6 +55,7 @@ class ChatList extends Component {
                     </div>
                 </div>
             )
+<<<<<<< HEAD
         // } else if (this.props.receivers.length === 0 || this.props.conversations.length === 0) {
         //     return <div className="chat-list">
         //                 No conversation yet
@@ -58,6 +64,16 @@ class ChatList extends Component {
             return <div className="chat-list">
             Loading...
         </div>
+=======
+        } else if (!this.props.receivers || !this.props.conversations) {
+            return <div className="chat-list">
+                        Loading...
+                    </div>
+        } else {
+            return <div className="chat-list">
+                        You current not on the conversation with anybody. Let get some.
+                    </div>
+>>>>>>> chat-testing
         }
        
     }

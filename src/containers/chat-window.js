@@ -126,7 +126,7 @@ class ChatWindow extends React.Component {
                     <div ref={el => { this.el = el; }} />
                 </div>
                 <form onSubmit={this.handleSubmit} className="text-message">
-                    <input type="text" name="content"/>
+                    <input type="text" name="content" autoComplete="off" />
                     <button onClick={this.handleSubmit} disabled={canSendMsg}>Send</button>
                 </form>
             </div>
