@@ -9,7 +9,7 @@ import '../styles/login-signup.css';
 
 class Login extends React.Component {
     state = {
-        endpoint: 'http://localhost:3001',
+        endpoint: 'https://hc-chat-app.herokuapp.com',
         error: '',
         page: 'login'
     }

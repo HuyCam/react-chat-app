@@ -17,7 +17,7 @@ class ChatBox extends React.Component{
     constructor(props) {
         super(props);
         this.state = {
-            endpoint: 'http://localhost:3001'
+            endpoint: 'https://hc-chat-app.herokuapp.com'
         };
 
         this.socket = socketio(this.state.endpoint);

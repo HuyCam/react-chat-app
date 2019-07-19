@@ -17,7 +17,7 @@ class SearchBar extends React.Component {
     handleSearch = (e) => {
         e.preventDefault();
         
-        axios.get(`http://localhost:3001/search?email=${e.target.email.value}`).then(res => {
+        axios.get(`https://hc-chat-app.herokuapp.com/search?email=${e.target.email.value}`).then(res => {
             this.setState({ user: res.data.user, displayResult: true })
         });
     }
@@ -34,7 +34,7 @@ class SearchBar extends React.Component {
     }
 
     handleChange = _.debounce((val) => {
-        axios.get(`http://localhost:3001/search?email=${val}`).then(res => {
+        axios.get(`https://hc-chat-app.herokuapp.com/search?email=${val}`).then(res => {
             this.setState({ user: res.data.user, displayResult: true })
         }, () => { 
             this.setState({ user: '' });
