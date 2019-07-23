@@ -9,22 +9,29 @@ import socketio from 'socket.io-client';
 // style
 import '../styles/chat-box.css';
 // import actions
-import { fetchConversations, addNewConMeta, updateCurrentCon, addNewCon } from '../actions/actions';
+import { fetchConversations, addNewConMeta, updateCurrentCon, addNewCon, resetStore } from '../actions/actions';
 import { bindActionCreators } from 'redux';
 
 
 class ChatBox extends React.Component{
     constructor(props) {
         super(props);
-        this.state = {
-            endpoint: 'https://hc-chat-app.herokuapp.com'
-        };
 
-        this.socket = socketio(this.state.endpoint);
+        this.socket = socketio(this.props.endpoint, { forceNew: true });
 
         this.socket.on('message', (body) => {
-            const {conversationID, senderID, content} = body;
-            this.updateConversation(conversationID, senderID, content);
+            const {conversationID} = body;
+            axios.get(`${this.props.endpoint}/receiver-and-conversation/${conversationID}`, { 
+                headers: {
+                    'Authorization': 'Bearer ' + this.props.usermeta.token
+                }
+            }).then(res => {
+                console.log('received a message');
+                const conversation = res.data.conversations;
+                console.log(conversation);
+                this.updateConversation(conversation);
+            });
+            
         });
 
         this.socket.on('initMsg', (body) => {
@@ -50,20 +57,15 @@ class ChatBox extends React.Component{
             });
         }
     }
+
     // update conversations in the store
-    updateConversation = (conversationID, senderID ,content) => {
+    updateConversation = async (conversation) => {
         const { conversations } = this.props;
         const newCons = conversations.map(val => {
-            if (val._id === conversationID) {
-                val.dialogs.push({
-                    _id: new Date().getTime(),
-                    senderID: senderID,
-                    content: content
-                });
-
-                return val;
+            if (val._id === conversation._id) {
+                return conversation;
             }
-            return val
+            return val;
         });
  
         this.props.fetchConversations(newCons);
@@ -71,7 +73,7 @@ class ChatBox extends React.Component{
 
     // fetch all conversations from server
     fetchConversation = () => {
-        axios.get(`${this.state.endpoint}/conversations`, {
+        axios.get(`${this.props.endpoint}/conversations`, {
             headers: {
                 'Authorization': 'Bearer ' + this.props.usermeta.token
             }
@@ -96,7 +98,7 @@ class ChatBox extends React.Component{
     user pm him, his chat box won't automatically point to that conversation.
     */
     fetchNewConversation = (conversationID, navigateCurrentCon = true) => {
-        axios.get(`${this.state.endpoint}/receiver-and-conversation/${conversationID}`, { 
+        axios.get(`${this.props.endpoint}/receiver-and-conversation/${conversationID}`, { 
             headers: {
                 'Authorization': 'Bearer ' + this.props.usermeta.token
             }
@@ -107,17 +109,13 @@ class ChatBox extends React.Component{
 
             if (navigateCurrentCon) {
                 this.props.updateCurrentCon(conversationID);
-            } else {
-                // this is to get arround the bug of chat List that it won't rerender itself
-                // shallow comparision
-                // this.props.updateCurrentCon(null);
             }
-
         }).catch(e => console.log(e));
     }
 
     // send msg to other user
-    sendMsg = (senderID, receiverID, conversationID, content) => {
+    sendMsg = async (senderID, receiverID, conversationID, content) => {
+        const response = await this.postDialog(content, conversationID);
         // send message to server and get acknowledgement
         this.socket.emit('message', {receiverID, senderID, conversationID, content}, (error, success) => {
             if (error) {
@@ -125,8 +123,7 @@ class ChatBox extends React.Component{
             } else {
                 console.log(success);
                 // when success, send API post to server
-                this.updateConversation(conversationID, senderID, content);
-                this.postDialog(content, conversationID);
+                this.updateConversation(response.data);
             }
         });
     }
@@ -134,7 +131,7 @@ class ChatBox extends React.Component{
     // send the first message to the receiver
     initMsg = async (senderID, receiverID, content) => {
         // post a init conversation
-        axios.post(`${this.state.endpoint}/new/conversations/${receiverID}`, {
+        axios.post(`${this.props.endpoint}/new/conversations/${receiverID}`, {
             content,
         } ,{
             headers: {
@@ -156,14 +153,27 @@ class ChatBox extends React.Component{
         })
     }
 
-    postDialog = (content, conversationID) => {
-        axios.patch(`${this.state.endpoint}/send-message/conversations/${conversationID}`, {
+    postDialog = async (content, conversationID) => {
+        return await axios.patch(`${this.props.endpoint}/send-message/conversations/${conversationID}`, {
             content
         },{
             headers: {
-                Authorization: this.props.usermeta.token
+                Authorization: 'Bearer ' + this.props.usermeta.token
             }
-        })
+        });
+    }
+
+    handleLogout = (e) => {
+        e.preventDefault();
+        axios.post(`${this.props.endpoint}/users/logout`, null, {
+            headers: {
+                Authorization: 'Bearer ' + this.props.usermeta.token
+            }
+        }).then(_ => {
+            this.props.resetStore();
+            this.socket.disconnect();
+            this.props.history.push('/');
+        });
     }
 
     render() {
@@ -183,7 +193,7 @@ class ChatBox extends React.Component{
             <div className="container-fluid main-chat">
                 <div className="navigation">
                     <div className="menu-list">
-                        <a href="#">Sign out</a>
+                        <a onClick={this.handleLogout}href="#">Sign out</a>
                         <a href="#">Personal Info[in development]</a>
                     </div>
                 </div>
@@ -211,7 +221,8 @@ const mapStateToProps = (state) => {
         conversations: state.conversations,
         conversationsMeta: state.conversationsMeta,
         currentConID: state.currentConID,
-        tempReceiver: state.tempReceiver
+        tempReceiver: state.tempReceiver,
+        endpoint: state.endpoint
     }
 }
 
@@ -220,7 +231,8 @@ const mapDispatchToProps = (dispatch) => {
         fetchConversations: bindActionCreators(fetchConversations, dispatch),
         addNewConMeta: bindActionCreators(addNewConMeta, dispatch),
         updateCurrentCon: bindActionCreators(updateCurrentCon, dispatch),
-        addNewCon: bindActionCreators(addNewCon, dispatch)
+        addNewCon: bindActionCreators(addNewCon, dispatch),
+        resetStore: bindActionCreators(resetStore, dispatch)
     }
 
 }

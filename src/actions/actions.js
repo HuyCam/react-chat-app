@@ -5,7 +5,8 @@ export const actions = {
     ADD_CONVERSATION_META: 'ADD_CONVERSATION_META',
     ADD_TEMP_RECEIVER: 'ADD_TEMP_RECEIVER',
     ADD_NEW_CON_META: 'ADD_NEW_CON_META',
-    ADD_NEW_CON: 'ADD_NEW_CON'
+    ADD_NEW_CON: 'ADD_NEW_CON',
+    RESET: 'RESET'
 }
 
 export const fetchUser = (user) => {
@@ -55,9 +56,15 @@ export const addNewCon = (conversation) => {
 
 // add a temporary conversation
 export const updateTempReceiver = (receiver) => {
-    console.log('temp work')
     return {
         type: actions.ADD_TEMP_RECEIVER,
         payload: receiver
+    }
+}
+
+// reset store (log out)
+export const resetStore = () => {
+    return {
+        type: actions.RESET
     }
 }

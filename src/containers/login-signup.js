@@ -9,7 +9,6 @@ import '../styles/login-signup.css';
 
 class Login extends React.Component {
     state = {
-        endpoint: 'https://hc-chat-app.herokuapp.com',
         error: '',
         page: 'login'
     }
@@ -38,7 +37,7 @@ class Login extends React.Component {
             password: e.target.password.value
         }
 
-        axios.post(`${this.state.endpoint}/users/login`, data).then(res => {
+        axios.post(`${this.props.endpoint}/users/login`, data).then(res => {
             const { _id, name, email } = res.data.user;
             const token = res.data.token;
             this.props.fetchUser({ _id, name, email, token });
@@ -58,7 +57,7 @@ class Login extends React.Component {
             password: e.target.password.value
         }
 
-        axios.post(`${this.state.endpoint}/users`, data).then(res => {
+        axios.post(`${this.props.endpoint}/users`, data).then(res => {
             const { _id, name, email } = res.data.user;
             const token = res.data.token;
             this.props.fetchUser({ _id, name, email, token });
@@ -130,10 +129,16 @@ class Login extends React.Component {
     }
 }
 
+const mapStateToProps = (state) => {
+    return {
+        endpoint: state.endpoint
+    }
+}
+
 const mapDispatchToProps = (dispatch) => {
      return {
          fetchUser: bindActionCreators(fetchUser, dispatch),
          addConversationMeta: bindActionCreators(addConversationMeta, dispatch)
      }
 }
-export default connect(null, mapDispatchToProps)(Login);
+export default connect(mapStateToProps, mapDispatchToProps)(Login);

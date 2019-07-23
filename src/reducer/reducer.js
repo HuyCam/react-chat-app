@@ -8,7 +8,7 @@ const Reducer = combineReducers({
     currentConID: updateCurrentCon,
     tempReceiver: tempReceiver,
     endpoint: function() {
-        return 'https://hc-chat-app.herokuapp.com'
+        return 'http://localhost:3001'
     }
 })
 
