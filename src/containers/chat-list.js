@@ -33,6 +33,7 @@ class ChatList extends Component {
                             lastDialog={dialogs[dialogs.length - 1] } 
                             conversation={conversation}
                             isSelected={isSelected}
+                            endpoint={this.props.endpoint}
                             />
         })
     }
@@ -70,7 +71,8 @@ class ChatList extends Component {
 
 const mapStateToProps = (state) => {
     return {
-        meta: state.conversationsMeta
+        meta: state.conversationsMeta,
+        endpoint: state.endpoint
     }
 }
 

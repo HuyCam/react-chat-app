@@ -22,7 +22,7 @@ class Contact extends React.Component {
         }
         return <div onClick={this.handleClick} className={"contact " + (this.props.isSelected ? 'selected' : '')}>
             <div className="avatar-holder">
-                <img src={`https://hc-chat-app.herokuapp.com/users/${this.props.receiver._id}/avatar`} alt="avatar" className="contact-avatar" />
+                <img src={`${this.props.endpoint}/users/${this.props.receiver._id}/avatar`} alt="avatar" className="contact-avatar" />
             </div>
             
             <div className="contact-detail">

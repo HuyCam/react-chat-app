@@ -1,10 +1,12 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import axios from 'axios';
+import socketio from 'socket.io-client';
+import { Link } from 'react-router-dom';
+// containers
 import SearchBar from './search-bar';
 import ChatList from './chat-list';
 import ChatWindow from './chat-window';
-import axios from 'axios';
-import socketio from 'socket.io-client';
 
 // style
 import '../styles/chat-box.css';
@@ -153,6 +155,7 @@ class ChatBox extends React.Component{
         })
     }
 
+    // post a dialog to server
     postDialog = async (content, conversationID) => {
         return await axios.patch(`${this.props.endpoint}/send-message/conversations/${conversationID}`, {
             content
@@ -170,8 +173,13 @@ class ChatBox extends React.Component{
                 Authorization: 'Bearer ' + this.props.usermeta.token
             }
         }).then(_ => {
+            // reset store to the first state
             this.props.resetStore();
+
+            // disconnect socket io
             this.socket.disconnect();
+
+            // go back to homepage
             this.props.history.push('/');
         });
     }
@@ -189,12 +197,13 @@ class ChatBox extends React.Component{
             userName = name;
             currentCon = this.getCurrentConversation();
         }
+        
         return(
             <div className="container-fluid main-chat">
                 <div className="navigation">
                     <div className="menu-list">
-                        <a onClick={this.handleLogout}href="#">Sign out</a>
-                        <a href="#">Personal Info[in development]</a>
+                        <a onClick={this.handleLogout} href="#">Sign out</a>
+                        <Link to="/profile">Personal Info</Link>
                     </div>
                 </div>
                 <div className="row">

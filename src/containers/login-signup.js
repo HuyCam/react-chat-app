@@ -15,6 +15,10 @@ class Login extends React.Component {
     componentDidMount() {
         // only add below function this for simulator
         // this.loginSimulation();
+
+        // loginSimulation and go to profile page
+        // this.loginSimulationAndProfile();
+
     }
     loginSimulation = async () => {
         const { data } = await axios.get('http://localhost:3001/simulation');
@@ -30,12 +34,28 @@ class Login extends React.Component {
         });
     }
 
+    loginSimulationAndProfile = async () => {
+        const { data } = await axios.get('http://localhost:3001/simulation');
+        axios.post('http://localhost:3001/users/login', {
+            email: data.email,
+            password: data.password
+        }).then(res => {
+            const { _id, name, email } = res.data.user;
+            const token = res.data.token;
+            this.props.fetchUser({ _id, name, email, token });
+            this.props.addConversationMeta(res.data.user.conversations);
+            this.props.history.push('/profile');
+        });
+    }
+
     handleLoginSubmit = (e) => {
         e.preventDefault();
         const data = {
             email: e.target.email.value,
             password: e.target.password.value
         }
+
+        console.log(data);
 
         axios.post(`${this.props.endpoint}/users/login`, data).then(res => {
             const { _id, name, email } = res.data.user;
@@ -46,7 +66,9 @@ class Login extends React.Component {
             this.props.history.push('/chatbox');
         }, () => {
             this.changeState({ error: 'Wrong Email or Password' });
-        })
+        }).catch(e => {
+            console.log(e);
+        }) 
     }
 
     handleSignUpSubmit = (e) => {
@@ -101,9 +123,8 @@ class Login extends React.Component {
                 </div>
                 
                 <div className="form-group">
-                <button onClick={this.handleClick} className="btn btn-secondary" name="signup">Get to Sign Up page</button>
+                    <button onClick={this.handleClick} className="btn btn-secondary" name="signup">Get to Sign Up page</button>
                 </div>
-                
             </form>
         </div>
         } else {
